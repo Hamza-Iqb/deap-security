@@ -15,18 +15,17 @@ public class Employee {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String email;
 	private String firstName;
 	private String lastName;
-	private String userName;
 	private String password;
 	
 	
-	public Employee(String firstName, String lastName, String userName, String password) {
+	public Employee(String email, String firstName, String lastName, String password) {
 		super();
+		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.userName = userName;
 		this.password = password;
 	}
 	
