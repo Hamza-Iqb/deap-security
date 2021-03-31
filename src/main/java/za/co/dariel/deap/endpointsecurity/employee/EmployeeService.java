@@ -39,6 +39,8 @@ public class EmployeeService {
 
 	}
 
+	@Transactional
+	//annotation allows me to just use the setters to adjust values in database instead of having to ask repo to save again
 	public void updateStudent(String username, String firstName, String lastName) {
 
 		Employee employee = employeeRepo.findById(username)
@@ -51,7 +53,6 @@ public class EmployeeService {
 		if (lastName != null && lastName.length() > 0 && !Objects.equals(employee.getLastName(), lastName)) {
 			employee.setLastName(lastName);
 		}
-		employeeRepo.save(employee);
 	}
 
 }
