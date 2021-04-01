@@ -3,6 +3,8 @@ package za.co.dariel.deap.endpointsecurity.employee;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import lombok.AllArgsConstructor;
 public class EmployeeService {
 
 	private EmployeeRepository employeeRepo;
+	
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public List<Employee> getEmployees() {
 
@@ -30,11 +34,17 @@ public class EmployeeService {
 	}
 
 	public void addEmployee(Employee employee) {
-		Optional<Employee> email = employeeRepo.findById(employee.getEmail());
-
-		if (email.isPresent()) {
-			throw new IllegalStateException("Email Taken");
+		Boolean userExists = employeeRepo.findById(employee.getEmail()).isPresent();
+		
+		if(userExists) {
+			throw new IllegalStateException("Email is already taken");
+	
 		}
+		
+		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
+		
+		employee.setPassword(encodedPassword);
+		
 		employeeRepo.save(employee);
 
 	}
