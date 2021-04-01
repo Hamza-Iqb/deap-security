@@ -20,27 +20,27 @@ public class EmployeeController {
 	
 	private final EmployeeService employeeService;
 	
-	@PostMapping()
+	@PostMapping("/registration")
 	public String registerNewEmployee(@RequestBody Employee employee) {
 		employeeService.addEmployee(employee);
 		return "Employee successfully added";
 	}
 	
 	
-	@GetMapping()
+	@GetMapping("/get")
 	public List<Employee> showAllEmployees(){
 		
 		return employeeService.getEmployees();
 	}
 	
-	@GetMapping("{username}")
+	@GetMapping("/get/{username}")
 	public Employee showSingleEmployee(@PathVariable("username") String username) {
 		return employeeService.getSingleEmployee(username);
 	}
 	
 	
 	
-	@PutMapping("{username}")
+	@PutMapping("/update/{username}")
 	public void updateEmployee(@PathVariable("username") String username, 
 			@RequestParam(required=false) String firstName, 
 			@RequestParam(required=false) String lastName) {
