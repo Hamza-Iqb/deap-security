@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,11 +15,21 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class EmployeeService {
+public class EmployeeService implements UserDetailsService{
 
 	private EmployeeRepository employeeRepo;
 	
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	private final static String USER_NOT_FOUND_MSG = "Employee with username: %s not found";
+	
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return employeeRepo.findById(username).orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+	}
+	
+	
 
 	public List<Employee> getEmployees() {
 
@@ -64,5 +77,7 @@ public class EmployeeService {
 			employee.setLastName(lastName);
 		}
 	}
+
+	
 
 }
