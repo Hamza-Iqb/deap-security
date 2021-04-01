@@ -2,20 +2,23 @@ package za.co.dariel.deap.endpointsecurity.employee;
 
 import java.util.List;
 
+import org.json.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
 
-@CrossOrigin(origins = "http://localhost:4200" , maxAge = 3600)// allow cors for front end
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 @RestController
 @AllArgsConstructor
-@RequestMapping("employee")
+@RequestMapping("/employee")
 public class EmployeeController {
 	
 	private final EmployeeService employeeService;
 
-	@PostMapping("/registration")
+	@PostMapping(value = "/registration")
 	public String registerNewEmployee(@RequestBody Employee employee) {
+		System.out.println("---------------------" + employee.getFirstName() +" "+ employee.getLastName());
 		employeeService.addEmployee(employee);
 		return "Employee successfully added";
 	}
