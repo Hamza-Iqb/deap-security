@@ -22,15 +22,15 @@ public class EmployeeController {
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
 		
 		// convert DTO to entity
-		Employee employeeRequest = modelMapper.map(employeeDto, Employee.class);
+		EmployeeEntity employeeRequest = modelMapper.map(employeeDto, EmployeeEntity.class);
 		
-		Employee employee = employeeService.addEmployee(employeeRequest);
+		EmployeeEntity employee = employeeService.addEmployee(employeeRequest);
 
 		// convert entity to DTO
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
 		System.out.println(employeeResponse);
-		return "Employee successfully added";
+		return "EmployeeEntity successfully added";
 	}
 
 	@GetMapping("/test")
@@ -39,13 +39,13 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get")
-	public List<Employee> showAllEmployees(){
+	public List<EmployeeEntity> showAllEmployees(){
 		
 		return employeeService.getEmployees();
 	}
 	
 	@GetMapping("/get/{username}")
-	public Employee showSingleEmployee(@PathVariable("username") String username) {
+	public EmployeeEntity showSingleEmployee(@PathVariable("username") String username) {
 		return employeeService.getSingleEmployee(username);
 	}
 	

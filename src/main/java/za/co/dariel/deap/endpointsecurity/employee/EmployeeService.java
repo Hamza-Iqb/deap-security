@@ -21,7 +21,7 @@ public class EmployeeService implements UserDetailsService{
 	
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	private final static String USER_NOT_FOUND_MSG = "Employee with username: %s not found";
+	private final static String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
 	
 	
 	@Override
@@ -31,13 +31,13 @@ public class EmployeeService implements UserDetailsService{
 	
 	
 
-	public List<Employee> getEmployees() {
+	public List<EmployeeEntity> getEmployees() {
 
-		return (List<Employee>) employeeRepo.findAll();
+		return (List<EmployeeEntity>) employeeRepo.findAll();
 	}
 
-	public Employee getSingleEmployee(String username) {
-		Optional<Employee> email = employeeRepo.findById(username);
+	public EmployeeEntity getSingleEmployee(String username) {
+		Optional<EmployeeEntity> email = employeeRepo.findById(username);
 
 		if (!email.isPresent()) {
 			throw new IllegalStateException("Username/Account does not exist     ");
@@ -46,7 +46,7 @@ public class EmployeeService implements UserDetailsService{
 		return employeeRepo.findById(username).orElse(null);
 	}
 
-	public Employee addEmployee(Employee employee) {
+	public EmployeeEntity addEmployee(EmployeeEntity employee) {
 		Boolean userExists = employeeRepo.findById(employee.getEmail()).isPresent();
 		
 		if(userExists) {
@@ -72,8 +72,8 @@ public class EmployeeService implements UserDetailsService{
 	//annotation allows me to just use the setters to adjust values in database instead of having to ask repo to save again
 	public void updateStudent(String username, String firstName, String lastName) {
 
-		Employee employee = employeeRepo.findById(username)
-				.orElseThrow(() -> new IllegalStateException("Employee with username: " + username + " does not exist"));
+		EmployeeEntity employee = employeeRepo.findById(username)
+				.orElseThrow(() -> new IllegalStateException("EmployeeEntity with username: " + username + " does not exist"));
 
 		if (firstName != null && firstName.length() > 0 && !Objects.equals(employee.getFirstName(), firstName)) {
 			employee.setFirstName(firstName);
