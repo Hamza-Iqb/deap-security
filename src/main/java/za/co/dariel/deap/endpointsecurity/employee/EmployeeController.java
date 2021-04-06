@@ -29,20 +29,20 @@ public class EmployeeController{
 		String decodedPassword = new String(decodedBytes);
 
 		//Decrypt String
-		String decryptedString = aes.decrypt(decodedPassword, keyString);
+		String decryptedString = aes.decrypt(decodedPassword);
 		System.out.println(decodedPassword);
 
 		//test
 		final String secretKey = keyString;
 		String originalString = "howtodoinjava.com";
-		String encryptedString = aes.encrypt(originalString, secretKey) ;
-		String decryptedStringg = aes.decrypt(encryptedString, secretKey) ;
+		String encryptedString = aes.encrypt(originalString) ;
+		String decryptedStringg = aes.decrypt(encryptedString) ;
 		System.out.println(originalString);
 		System.out.println(encryptedString);
 		System.out.println(decryptedStringg);
 
 		//set employee password
-		employee.setPassword(decryptedString);
+		//employee.setPassword(decryptedString);
 
 		//store employee
 		//employeeService.addEmployee(employee);
