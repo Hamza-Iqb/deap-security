@@ -32,6 +32,7 @@ public class EmployeeController{
 		String decryptedString = aes.decrypt(decodedPassword, keyString);
 		System.out.println(decodedPassword);
 
+		//test
 		final String secretKey = keyString;
 		String originalString = "howtodoinjava.com";
 		String encryptedString = aes.encrypt(originalString, secretKey) ;
