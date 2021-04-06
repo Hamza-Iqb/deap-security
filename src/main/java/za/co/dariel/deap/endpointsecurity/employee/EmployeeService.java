@@ -46,7 +46,7 @@ public class EmployeeService implements UserDetailsService{
 		return employeeRepo.findById(username).orElse(null);
 	}
 
-	public void addEmployee(Employee employee) {
+	public Employee addEmployee(Employee employee) {
 		Boolean userExists = employeeRepo.findById(employee.getEmail()).isPresent();
 		
 		if(userExists) {
@@ -54,11 +54,17 @@ public class EmployeeService implements UserDetailsService{
 	
 		}
 		
+		String givenPassword = employee.getPassword();
+		
 		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
 		
 		employee.setPassword(encodedPassword);
 		
-		employeeRepo.save(employee);
+		//code below just tests to make sure password was hashed correctly and matches original
+		boolean isPasswordMatch = bCryptPasswordEncoder.matches(givenPassword, encodedPassword);
+		System.out.println("Password : " + givenPassword + "   isPasswordMatch    : " + isPasswordMatch);
+		
+		return employeeRepo.save(employee);
 
 	}
 
