@@ -1,4 +1,4 @@
-package za.co.dariel.deap.endpointsecurity.employee;
+package za.co.dariel.deap.endpointsecurity.entities;
 
 import java.util.Collection;
 import java.util.Collections;

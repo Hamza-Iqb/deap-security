@@ -1,4 +1,4 @@
-package za.co.dariel.deap.endpointsecurity.employee;
+package za.co.dariel.deap.endpointsecurity.services;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
+import za.co.dariel.deap.endpointsecurity.repository.EmployeeRepository;
 
 @Service
 @AllArgsConstructor

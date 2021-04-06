@@ -1,4 +1,4 @@
-package za.co.dariel.deap.endpointsecurity.employee;
+package za.co.dariel.deap.endpointsecurity.services;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
+import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
+import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
 
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 @RestController
