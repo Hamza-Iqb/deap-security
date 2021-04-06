@@ -33,7 +33,7 @@ public class EmployeeController {
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
 		System.out.println(employeeResponse);
-		return "EmployeeEntity successfully added";
+		return "Employee successfully added";
 	}
 
 	@GetMapping("/test")
@@ -56,11 +56,18 @@ public class EmployeeController {
 	
 	
 	@PutMapping("/update/{username}")
-	public void updateEmployee(@PathVariable("username") String username, 
-			@RequestParam(required=false) String firstName, 
-			@RequestParam(required=false) String lastName) {
+	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
 		
-		employeeService.updateStudent(username, firstName, lastName);
+		// convert DTO to Entity
+		EmployeeEntity employeeRequest = modelMapper.map(employeeDto, EmployeeEntity.class);
+
+		EmployeeEntity employee = employeeService.updateStudent(username, employeeRequest);
+
+		// entity to DTO
+		EmployeeDto employeeResponse = modelMapper.map(employeeDto, EmployeeDto.class);
+		System.out.println(employeeResponse);
+
+		return "Updated employee details";
 	}
 
 }
