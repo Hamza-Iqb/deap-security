@@ -3,6 +3,7 @@ package za.co.dariel.deap.endpointsecurity.employee;
 import java.util.List;
 
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,20 @@ import lombok.AllArgsConstructor;
 public class EmployeeController {
 	
 	private final EmployeeService employeeService;
+	private ModelMapper modelMapper;
 
 	@PostMapping(value = "/registration")
-	public String registerNewEmployee(@RequestBody Employee employee) {
-		System.out.println("---------------------" + employee.getFirstName() +" "+ employee.getLastName());
-		employeeService.addEmployee(employee);
+	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
+		
+		// convert DTO to entity
+		Employee employeeRequest = modelMapper.map(employeeDto, Employee.class);
+		
+		Employee employee = employeeService.addEmployee(employeeRequest);
+
+		// convert entity to DTO
+		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
+
+		System.out.println(employeeResponse);
 		return "Employee successfully added";
 	}
 
