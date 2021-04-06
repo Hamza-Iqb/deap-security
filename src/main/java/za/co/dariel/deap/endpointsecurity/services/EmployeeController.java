@@ -1,6 +1,7 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
@@ -41,9 +42,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get")
-	public List<EmployeeEntity> showAllEmployees(){
+	public List<EmployeeDto> showAllEmployees(){
 		
-		return employeeService.getEmployees();
+		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("/get/{username}")
