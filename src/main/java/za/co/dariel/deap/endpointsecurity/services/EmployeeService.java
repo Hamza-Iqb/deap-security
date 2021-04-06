@@ -72,18 +72,21 @@ public class EmployeeService implements UserDetailsService{
 
 	@Transactional
 	//annotation allows me to just use the setters to adjust values in database instead of having to ask repo to save again
-	public void updateStudent(String username, String firstName, String lastName) {
+	public EmployeeEntity updateStudent(String username, EmployeeEntity employeeRequest) {
 
 		EmployeeEntity employee = employeeRepo.findById(username)
 				.orElseThrow(() -> new IllegalStateException("EmployeeEntity with username: " + username + " does not exist"));
 
-		if (firstName != null && firstName.length() > 0 && !Objects.equals(employee.getFirstName(), firstName)) {
-			employee.setFirstName(firstName);
+		if (employeeRequest.getFirstName() != null && employeeRequest.getFirstName().length() > 0 
+				&& !Objects.equals(employee.getFirstName(), employeeRequest.getFirstName())) {
+			employee.setFirstName(employeeRequest.getFirstName());
 		}
 
-		if (lastName != null && lastName.length() > 0 && !Objects.equals(employee.getLastName(), lastName)) {
-			employee.setLastName(lastName);
+		if (employeeRequest.getLastName() != null && employeeRequest.getLastName().length() > 0 
+				&& !Objects.equals(employee.getLastName(), employeeRequest.getLastName())) {
+			employee.setLastName(employeeRequest.getLastName());
 		}
+		return employeeRequest;
 	}
 
 	
