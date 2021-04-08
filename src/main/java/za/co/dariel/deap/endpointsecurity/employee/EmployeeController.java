@@ -45,7 +45,7 @@ public class EmployeeController{
 		//employee.setPassword(decryptedString);
 
 		//store employee
-		//employeeService.addEmployee(employee);
+		employeeService.addEmployee(employee);
 		return "Employee successfully added";
 	}
 
