@@ -21,9 +21,6 @@ public class EmployeeController{
 	@PostMapping(value = "/registration")
 	public String registerNewEmployee(@RequestBody Employee employee) {
 
-		//encryption secret key
-		final String keyString = "NcRfUjXn2r5u7x!A%D*G-KaPdSgVkYp3";
-
 		//Convert base 64 to String
 		byte[] decodedBytes = Base64.getDecoder().decode(employee.getPassword());
 		String decodedPassword = new String(decodedBytes);
@@ -33,7 +30,6 @@ public class EmployeeController{
 		System.out.println(decodedPassword);
 
 		//test
-		final String secretKey = keyString;
 		String originalString = "howtodoinjava.com";
 		String encryptedString = aes.encrypt(originalString) ;
 		String decryptedStringg = aes.decrypt(encryptedString) ;
@@ -48,6 +44,14 @@ public class EmployeeController{
 		employeeService.addEmployee(employee);
 		return "Employee successfully added";
 	}
+
+	@PostMapping("/delete")
+	public String deleteEmployee(@RequestBody String email){
+		System.out.println(email);
+		employeeService.deleteEmployeeByEmail(email);
+		return "successfully deleted employee";
+	}
+
 
 	@GetMapping("/test")
 	public String testApi(){

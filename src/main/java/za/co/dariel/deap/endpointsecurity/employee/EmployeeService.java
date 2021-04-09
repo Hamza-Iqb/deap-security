@@ -27,7 +27,9 @@ public class EmployeeService implements UserDetailsService{
 		return employeeRepo.findById(username).orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
 	
-	
+	public void deleteEmployeeByEmail(String email){
+		employeeRepo.deleteByEmail(email);
+	}
 
 	public List<Employee> getEmployees() {
 
