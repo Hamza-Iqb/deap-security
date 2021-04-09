@@ -3,9 +3,7 @@ package za.co.dariel.deap.endpointsecurity.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
