@@ -49,8 +49,12 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/get/{username}")
-	public EmployeeEntity showSingleEmployee(@PathVariable("username") String username) {
-		return employeeService.getSingleEmployee(username);
+	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
+		EmployeeEntity employee = employeeService.getSingleEmployee(username);
+		
+		// convert entity to DTO
+		EmployeeDto employeepostResponse = modelMapper.map(employee, EmployeeDto.class);
+		return employeepostResponse;
 	}
 	
 	
