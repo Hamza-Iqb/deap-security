@@ -17,21 +17,19 @@ import za.co.dariel.deap.endpointsecurity.repository.EmployeeRepository;
 
 @Service
 @AllArgsConstructor
-public class EmployeeService implements UserDetailsService{
+public class EmployeeService implements UserDetailsService {
 
 	private EmployeeRepository employeeRepo;
-	
+
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	private final static String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
-	
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return employeeRepo.findById(username).orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+		return employeeRepo.findById(username)
+				.orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
 	}
-	
-	
 
 	public List<EmployeeEntity> getEmployees() {
 
@@ -50,45 +48,49 @@ public class EmployeeService implements UserDetailsService{
 
 	public EmployeeEntity addEmployee(EmployeeEntity employee) {
 		Boolean userExists = employeeRepo.findById(employee.getEmail()).isPresent();
-		
-		if(userExists) {
+
+		if (userExists) {
 			throw new IllegalStateException("Email is already taken");
-	
+
 		}
-		
+
 		String givenPassword = employee.getPassword();
-		
+
 		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
-		
+
 		employee.setPassword(encodedPassword);
-		
-		//code below just tests to make sure password was hashed correctly and matches original
+
+		// code below just tests to make sure password was hashed correctly and matches
+		// original
 		boolean isPasswordMatch = bCryptPasswordEncoder.matches(givenPassword, encodedPassword);
 		System.out.println("Password : " + givenPassword + "   isPasswordMatch    : " + isPasswordMatch);
-		
+
 		return employeeRepo.save(employee);
 
 	}
 
 	@Transactional
-	//annotation allows me to just use the setters to adjust values in database instead of having to ask repo to save again
+	// annotation allows me to just use the setters to adjust values in database
+	// instead of having to ask repo to save again
 	public EmployeeEntity updateStudent(String username, EmployeeEntity employeeRequest) {
 
-		EmployeeEntity employee = employeeRepo.findById(username)
-				.orElseThrow(() -> new IllegalStateException("EmployeeEntity with username: " + username + " does not exist"));
+		EmployeeEntity employee = employeeRepo.findById(username).orElseThrow(
+				() -> new IllegalStateException("EmployeeEntity with username: " + username + " does not exist"));
 
-		if (employeeRequest.getFirstName() != null && employeeRequest.getFirstName().length() > 0 
+		if (employeeRequest.getFirstName() != null && employeeRequest.getFirstName().length() > 0
 				&& !Objects.equals(employee.getFirstName(), employeeRequest.getFirstName())) {
 			employee.setFirstName(employeeRequest.getFirstName());
 		}
 
-		if (employeeRequest.getLastName() != null && employeeRequest.getLastName().length() > 0 
+		if (employeeRequest.getLastName() != null && employeeRequest.getLastName().length() > 0
 				&& !Objects.equals(employee.getLastName(), employeeRequest.getLastName())) {
 			employee.setLastName(employeeRequest.getLastName());
 		}
 		return employeeRequest;
 	}
 
-	
+	public void deleteEmployee(String email) {
+		employeeRepo.deleteById(email);
+	}
 
 }
