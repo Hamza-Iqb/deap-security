@@ -18,9 +18,7 @@ import lombok.AllArgsConstructor;
 public class EmployeeService implements UserDetailsService{
 
 	private EmployeeRepository employeeRepo;
-	
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-	
 	private final static String USER_NOT_FOUND_MSG = "Employee with username: %s not found";
 	
 	

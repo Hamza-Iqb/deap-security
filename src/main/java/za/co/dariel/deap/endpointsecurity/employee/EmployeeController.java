@@ -1,24 +1,50 @@
 package za.co.dariel.deap.endpointsecurity.employee;
 
-import java.util.List;
 
-import org.json.JSONObject;
-import org.springframework.http.MediaType;
+import java.util.Base64;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
+import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
+
 
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 @RestController
 @AllArgsConstructor
 @RequestMapping("/employee")
-public class EmployeeController {
-	
+public class EmployeeController{
+
 	private final EmployeeService employeeService;
+	private final AES aes;
 
 	@PostMapping(value = "/registration")
 	public String registerNewEmployee(@RequestBody Employee employee) {
-		System.out.println("---------------------" + employee.getFirstName() +" "+ employee.getLastName());
+
+		//encryption secret key
+		final String keyString = "NcRfUjXn2r5u7x!A%D*G-KaPdSgVkYp3";
+
+		//Convert base 64 to String
+		byte[] decodedBytes = Base64.getDecoder().decode(employee.getPassword());
+		String decodedPassword = new String(decodedBytes);
+
+		//Decrypt String
+		String decryptedString = aes.decrypt(decodedPassword);
+		System.out.println(decodedPassword);
+
+		//test
+		final String secretKey = keyString;
+		String originalString = "howtodoinjava.com";
+		String encryptedString = aes.encrypt(originalString) ;
+		String decryptedStringg = aes.decrypt(encryptedString) ;
+		System.out.println(originalString);
+		System.out.println(encryptedString);
+		System.out.println(decryptedStringg);
+
+		//set employee password
+		//employee.setPassword(decryptedString);
+
+		//store employee
 		employeeService.addEmployee(employee);
 		return "Employee successfully added";
 	}
