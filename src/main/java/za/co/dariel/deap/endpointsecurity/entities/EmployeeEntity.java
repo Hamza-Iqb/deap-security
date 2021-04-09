@@ -1,4 +1,4 @@
-package za.co.dariel.deap.endpointsecurity.employee;
+package za.co.dariel.deap.endpointsecurity.entities;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Employee implements UserDetails {
+public class EmployeeEntity implements UserDetails {
 
 	@Id
 	private String email;
@@ -26,7 +26,7 @@ public class Employee implements UserDetails {
 	private String lastName;
 	private String password;
 
-	public Employee(String email, String firstName, String lastName, String password) {
+	public EmployeeEntity(String email, String firstName, String lastName, String password) {
 		super();
 		this.email = email;
 		this.firstName = firstName;
