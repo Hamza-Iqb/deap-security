@@ -15,14 +15,13 @@ import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/employee")
 public class EmployeeController {
 
 	private final EmployeeService employeeService;
 	private ModelMapper modelMapper;
 	private final AES aes;
 
-	@PostMapping(value = "/registration")
+	@PostMapping(value = "employee/registration")
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
 
 		// Convert base 64 to String
@@ -53,19 +52,19 @@ public class EmployeeController {
 		return "Employee successfully added";
 	}
 
-	@GetMapping("/test")
+	@GetMapping("")
 	public String testApi() {
-		return "API IS WORKING!!!";
+		return "Welcome!!!";
 	}
 
-	@GetMapping("/get")
+	@GetMapping("employee/get")
 	public List<EmployeeDto> showAllEmployees() {
 
 		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
 				.collect(Collectors.toList());
 	}
 
-	@GetMapping("/get/{username}")
+	@GetMapping("employee/get/{username}")
 	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
 		EmployeeEntity employee = employeeService.getSingleEmployee(username);
 
@@ -74,7 +73,7 @@ public class EmployeeController {
 		return employeepostResponse;
 	}
 
-	@PutMapping("/update/{username}")
+	@PutMapping("employee/update/{username}")
 	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
 
 		// convert DTO to Entity
@@ -89,7 +88,7 @@ public class EmployeeController {
 		return "Updated employee details";
 	}
 
-	@DeleteMapping("/delete/{email}")
+	@DeleteMapping("employee/delete/{email}")
 	public String deleteEmployee(@PathVariable("email") String email) {
 
 		EmployeeEntity employee = employeeService.getSingleEmployee(email);
