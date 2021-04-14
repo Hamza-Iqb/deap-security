@@ -4,12 +4,22 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
+
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.AllArgsConstructor;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
+import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
@@ -53,16 +63,41 @@ public class EmployeeController {
 	}
 
 	@GetMapping("")
-	public String testApi() {
-		return "Welcome!!!";
+	public String home() {
+		String body =
+		        "<HTML><body> <a href=\"http://localhost:8081/employee/get\">View all employees</a></body></HTML>";
+		    return ("Welcome!!!" + "\r" + body);
 	}
+	
+	@GetMapping("/logout")
+	  public String logout(HttpServletRequest request) throws ServletException {
+	    request.logout();
+	    return "You are logged out";
+	  }
 
 	@GetMapping("employee/get")
 	public List<EmployeeDto> showAllEmployees() {
 
 		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
 				.collect(Collectors.toList());
+		
 	}
+	
+	@GetMapping("/token")
+    public String getToken(){
+		
+		String token = JWTUtil.getJWTToken();
+		
+		 java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
+         String[] parts = token.split("\\."); // split out the "parts" (header, payload and signature)
+
+         String headerJson = new String(decoder.decode(parts[0]));
+         String payloadJson = new String(decoder.decode(parts[1]));
+         //String signatureJson = new String(decoder.decode(parts[2]));    
+         
+         return headerJson + System.lineSeparator() + payloadJson;
+	    
+    }
 
 	@GetMapping("employee/get/{username}")
 	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
