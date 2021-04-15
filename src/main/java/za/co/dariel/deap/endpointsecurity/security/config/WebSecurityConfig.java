@@ -47,7 +47,8 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.authorizeRequests()
+        http.cors().and()
+        .authorizeRequests()
         .antMatchers("/employee/get").hasRole("employee")
         .antMatchers("/employee/**").permitAll()
         
