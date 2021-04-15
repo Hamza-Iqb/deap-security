@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,7 +23,7 @@ import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
 import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+@CrossOrigin("*")
 @RestController
 @AllArgsConstructor
 public class EmployeeController {
@@ -30,7 +31,8 @@ public class EmployeeController {
 	private final EmployeeService employeeService;
 	private ModelMapper modelMapper;
 	private final AES aes;
-
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
 	@PostMapping(value = "employee/registration")
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
 
@@ -61,7 +63,9 @@ public class EmployeeController {
 		System.out.println(employeeResponse);
 		return "Employee successfully added";
 	}
-
+	
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
 	@GetMapping("")
 	public String home() {
 		String body =
@@ -69,12 +73,17 @@ public class EmployeeController {
 		    return ("Welcome!!!" + "\r" + body);
 	}
 	
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
 	@GetMapping("/logout")
 	  public String logout(HttpServletRequest request) throws ServletException {
 	    request.logout();
 	    return "You are logged out";
 	  }
 
+	
+	
+	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get")
 	public List<EmployeeDto> showAllEmployees() {
 
@@ -83,6 +92,9 @@ public class EmployeeController {
 		
 	}
 	
+	
+	
+	@RolesAllowed("employee-admin")
 	@GetMapping("/token")
     public String getToken(){
 		
@@ -98,7 +110,10 @@ public class EmployeeController {
          return headerJson + System.lineSeparator() + payloadJson;
 	    
     }
-
+	
+	
+	
+	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get/{username}")
 	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
 		EmployeeEntity employee = employeeService.getSingleEmployee(username);
@@ -108,6 +123,8 @@ public class EmployeeController {
 		return employeepostResponse;
 	}
 
+	
+	@RolesAllowed("employee-admin")
 	@PutMapping("employee/update/{username}")
 	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
 
@@ -123,6 +140,9 @@ public class EmployeeController {
 		return "Updated employee details";
 	}
 
+	
+	
+	@RolesAllowed("employee-admin")
 	@DeleteMapping("employee/delete/{email}")
 	public String deleteEmployee(@PathVariable("email") String email) {
 
