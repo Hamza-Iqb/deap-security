@@ -1,5 +1,6 @@
 package za.co.dariel.deap.endpointsecurity.security.config;
 
+
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -15,7 +16,6 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import lombok.AllArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -56,5 +56,6 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         .and()
         .csrf().disable();
     }
+   
 }
 
