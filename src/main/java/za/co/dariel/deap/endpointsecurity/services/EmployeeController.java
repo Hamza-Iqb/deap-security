@@ -4,25 +4,36 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
+
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.AllArgsConstructor;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
+import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
+@CrossOrigin("*")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/employee")
 public class EmployeeController {
 
 	private final EmployeeService employeeService;
 	private ModelMapper modelMapper;
 	private final AES aes;
-
-	@PostMapping(value = "/registration")
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
+	@PostMapping(value = "employee/registration")
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
 
 		// Convert base 64 to String
@@ -52,20 +63,58 @@ public class EmployeeController {
 		System.out.println(employeeResponse);
 		return "Employee successfully added";
 	}
-
-	@GetMapping("/test")
-	public String testApi() {
-		return "API IS WORKING!!!";
+	
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
+	@GetMapping("")
+	public String home() {
+		String body =
+		        "<HTML><body> <a href=\"http://localhost:8081/employee/get\">View all employees</a></body></HTML>";
+		    return ("Welcome!!!" + "\r" + body);
 	}
+	
+	
+	@RolesAllowed({"employee-user", "employee-admin"})
+	@GetMapping("/logout")
+	  public String logout(HttpServletRequest request) throws ServletException {
+	    request.logout();
+	    return "You are logged out";
+	  }
 
-	@GetMapping("/get")
+	
+	
+	@RolesAllowed("employee-admin")
+	@GetMapping("employee/get")
 	public List<EmployeeDto> showAllEmployees() {
 
 		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
 				.collect(Collectors.toList());
+		
 	}
+	
+	
+	
+	@RolesAllowed("employee-admin")
+	@GetMapping("/token")
+    public String getToken(){
+		
+		String token = JWTUtil.getJWTToken();
+		
+		 java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
+         String[] parts = token.split("\\."); // split out the "parts" (header, payload and signature)
 
-	@GetMapping("/get/{username}")
+         String headerJson = new String(decoder.decode(parts[0]));
+         String payloadJson = new String(decoder.decode(parts[1]));
+         //String signatureJson = new String(decoder.decode(parts[2]));    
+         
+         return headerJson + System.lineSeparator() + payloadJson;
+	    
+    }
+	
+	
+	
+	@RolesAllowed("employee-admin")
+	@GetMapping("employee/get/{username}")
 	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
 		EmployeeEntity employee = employeeService.getSingleEmployee(username);
 
@@ -74,7 +123,9 @@ public class EmployeeController {
 		return employeepostResponse;
 	}
 
-	@PutMapping("/update/{username}")
+	
+	@RolesAllowed("employee-admin")
+	@PutMapping("employee/update/{username}")
 	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
 
 		// convert DTO to Entity
@@ -89,7 +140,10 @@ public class EmployeeController {
 		return "Updated employee details";
 	}
 
-	@DeleteMapping("/delete/{email}")
+	
+	
+	@RolesAllowed("employee-admin")
+	@DeleteMapping("employee/delete/{email}")
 	public String deleteEmployee(@PathVariable("email") String email) {
 
 		EmployeeEntity employee = employeeService.getSingleEmployee(email);
