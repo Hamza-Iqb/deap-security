@@ -2,6 +2,7 @@ package za.co.dariel.deap.endpointsecurity.security.encryption;
 
 import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 import javax.crypto.Cipher;
@@ -18,7 +19,10 @@ public class AES {
 
     public static String encrypt(String strToEncrypt) {
         try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        	SecureRandom random = new SecureRandom();
+        	
+        	byte[] iv = new byte[16];
+            random.nextBytes(iv);
             IvParameterSpec ivspec = new IvParameterSpec(iv);
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
@@ -38,7 +42,10 @@ public class AES {
 
     public static String decrypt(String strToDecrypt) {
         try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        	SecureRandom random = new SecureRandom();
+        	
+        	byte[] iv = new byte[16];
+            random.nextBytes(iv);
             IvParameterSpec ivspec = new IvParameterSpec(iv);
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");

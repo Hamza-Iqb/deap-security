@@ -3,7 +3,8 @@ package za.co.dariel.deap.endpointsecurity.services;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +24,9 @@ public class EmployeeService implements UserDetailsService {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private final static String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
+	private final String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
+	
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -49,7 +52,7 @@ public class EmployeeService implements UserDetailsService {
 	public EmployeeEntity addEmployee(EmployeeEntity employee) {
 		Boolean userExists = employeeRepo.findById(employee.getEmail()).isPresent();
 
-		if (userExists) {
+		if (Boolean.TRUE.equals(userExists)) {
 			throw new IllegalStateException("Email is already taken");
 
 		}
@@ -63,7 +66,7 @@ public class EmployeeService implements UserDetailsService {
 		// code below just tests to make sure password was hashed correctly and matches
 		// original
 		boolean isPasswordMatch = bCryptPasswordEncoder.matches(givenPassword, encodedPassword);
-		System.out.println("Password : " + givenPassword + "   isPasswordMatch    : " + isPasswordMatch);
+		logger.info("Password : " + givenPassword + "   isPasswordMatch    : " + isPasswordMatch);
 
 		return employeeRepo.save(employee);
 

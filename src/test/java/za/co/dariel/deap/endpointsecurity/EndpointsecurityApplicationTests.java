@@ -8,6 +8,8 @@ class EndpointsecurityApplicationTests {
 
 	@Test
 	void contextLoads() {
+		
+		assert(true);
 	}
 
 }
