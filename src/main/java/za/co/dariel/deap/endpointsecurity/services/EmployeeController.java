@@ -3,20 +3,13 @@ package za.co.dariel.deap.endpointsecurity.services;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.AccessToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
-
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 import lombok.AllArgsConstructor;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
@@ -32,6 +25,10 @@ public class EmployeeController {
 	private ModelMapper modelMapper;
 	private final AES aes;
 	
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+	
+	
+	
 	@RolesAllowed({"employee-user", "employee-admin"})
 	@PostMapping(value = "employee/registration")
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
@@ -42,15 +39,7 @@ public class EmployeeController {
 
 		// Decrypt String
 		String decryptedString = aes.decrypt(decodedPassword);
-		System.out.println(decodedPassword);
 
-		// test
-		String originalString = "howtodoinjava.com";
-		String encryptedString = aes.encrypt(originalString);
-		String decryptedStringg = aes.decrypt(encryptedString);
-		System.out.println(originalString);
-		System.out.println(encryptedString);
-		System.out.println(decryptedStringg);
 
 		// convert DTO to entity
 		EmployeeEntity employeeRequest = modelMapper.map(employeeDto, EmployeeEntity.class);
@@ -60,7 +49,7 @@ public class EmployeeController {
 		// convert entity to DTO
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
-		System.out.println(employeeResponse);
+		logger.info(employeeResponse.toString());
 		return "Employee successfully added";
 	}
 	
@@ -105,9 +94,9 @@ public class EmployeeController {
 
          String headerJson = new String(decoder.decode(parts[0]));
          String payloadJson = new String(decoder.decode(parts[1]));
-         //String signatureJson = new String(decoder.decode(parts[2]));    
+         String signatureJson = new String(decoder.decode(parts[2]));    
          
-         return headerJson + System.lineSeparator() + payloadJson;
+         return headerJson + "--------" + payloadJson + "--------" + signatureJson;
 	    
     }
 	
