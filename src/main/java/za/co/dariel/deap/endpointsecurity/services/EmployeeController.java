@@ -16,7 +16,7 @@ import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
 import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
-@CrossOrigin("*")
+@CrossOrigin(value = "*", allowedHeaders = "*")
 @RestController
 @AllArgsConstructor
 public class EmployeeController {
