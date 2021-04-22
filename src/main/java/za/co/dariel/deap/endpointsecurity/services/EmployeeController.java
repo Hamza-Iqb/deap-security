@@ -1,20 +1,19 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
-import lombok.AllArgsConstructor;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
 import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
+
+import javax.annotation.security.RolesAllowed;
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(value = "*", allowedHeaders = "*")
 @RestController
@@ -26,6 +25,8 @@ public class EmployeeController {
 	private final AES aes;
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
+
+	private KeycloakService keyClockService;
 	
 	
 	
@@ -49,28 +50,12 @@ public class EmployeeController {
 		// convert entity to DTO
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
+		keyClockService.createUserInKeyCloak(employee);
+
 		logger.info(employeeResponse.toString());
 		return "Employee successfully added";
 	}
-	
-	
-	@RolesAllowed({"employee-user", "employee-admin"})
-	@GetMapping("")
-	public String home() {
-		String body =
-		        "<HTML><body> <a href=\"http://localhost:8081/employee/get\">View all employees</a></body></HTML>";
-		    return ("Welcome!!!" + "\r" + body);
-	}
-	
-	
-	@RolesAllowed({"employee-user", "employee-admin"})
-	@GetMapping("/logout")
-	  public String logout(HttpServletRequest request) throws ServletException {
-	    request.logout();
-	    return "You are logged out";
-	  }
 
-	
 	
 	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get")
@@ -78,7 +63,7 @@ public class EmployeeController {
 
 		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
 				.collect(Collectors.toList());
-		
+
 	}
 	
 	
