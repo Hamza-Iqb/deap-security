@@ -63,11 +63,6 @@ public class EmployeeService implements UserDetailsService {
 
 		employee.setPassword(encodedPassword);
 
-		// code below just tests to make sure password was hashed correctly and matches
-		// original
-		boolean isPasswordMatch = bCryptPasswordEncoder.matches(givenPassword, encodedPassword);
-		logger.info("Password : " + givenPassword + "   isPasswordMatch    : " + isPasswordMatch);
-
 		return employeeRepo.save(employee);
 
 	}
