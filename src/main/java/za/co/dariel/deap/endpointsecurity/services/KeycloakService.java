@@ -23,16 +23,19 @@ public class KeycloakService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
 
     @Value("${keycloak.credentials.secret}")
-    private String SECRETKEY;
+    private String secretKey;
 
     @Value("${keycloak.resource}")
-    private String CLIENTID;
+    private String clientId;
 
     @Value("${keycloak.auth-server-url}")
-    private String AUTHURL;
+    private String authUrl;
 
     @Value("${keycloak.realm}")
-    private String REALM;
+    private String realm;
+
+    private String adminUsername = "admin";
+    private String adminPassword = "admin";
 
 
     public int createUserInKeyCloak(EmployeeEntity employeeEntity) {
@@ -75,15 +78,15 @@ public class KeycloakService {
                 RoleRepresentation savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
                 realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
 
-                logger.info("Username==" + employeeEntity.getUsername() + " created in keycloak successfully");
+                logger.info("Username: " + employeeEntity.getUsername() + " created in keycloak successfully");
 
             }
 
             else if (statusId == 409) {
-                logger.error("Username==" + employeeEntity.getUsername() + " already present in keycloak");
+                logger.error("Username: " + employeeEntity.getUsername() + " already present in keycloak");
 
             } else {
-                logger.error("Username==" + employeeEntity.getUsername() + " could not be created in keycloak");
+                logger.error("Username: " + employeeEntity.getUsername() + " could not be created in keycloak");
 
             }
 
@@ -105,7 +108,7 @@ public class KeycloakService {
         CredentialRepresentation passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);
         passwordCred.setType(CredentialRepresentation.PASSWORD);
-        passwordCred.setValue(newPassword.toString().trim());
+        passwordCred.setValue(newPassword.trim());
 
         // Set password credential
         userResource.get(userId).resetPassword(passwordCred);
@@ -114,25 +117,23 @@ public class KeycloakService {
 
     private UsersResource getKeycloakUserResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(AUTHURL).realm("master").username("admin").password("admin")
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(adminUsername).password(adminPassword)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
-        RealmResource realmResource = kc.realm(REALM);
-        UsersResource userRessource = realmResource.users();
+        RealmResource realmResource = kc.realm(realm);
 
-        return userRessource;
+        return realmResource.users();
     }
 
     private RealmResource getRealmResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(AUTHURL).realm("master").username("admin").password("admin")
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(adminUsername).password(adminPassword)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
-        RealmResource realmResource = kc.realm(REALM);
 
-        return realmResource;
+        return kc.realm(realm);
 
     }
 
