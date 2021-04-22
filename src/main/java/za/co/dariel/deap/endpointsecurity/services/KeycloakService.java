@@ -21,6 +21,7 @@ import java.util.Arrays;
 public class KeycloakService {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
+    private static final String ACTION = "Username==";
 
     @Value("${keycloak.credentials.secret}")
     private String secretKey;
@@ -72,20 +73,21 @@ public class KeycloakService {
                 // Set password credential
                 userResource.get(userId).resetPassword(passwordCred);
 
+
                 // set role
                 RealmResource realmResource = getRealmResource();
                 RoleRepresentation savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
                 realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
 
-                logger.info("Username: " + employeeEntity.getUsername() + " created in keycloak successfully");
+                logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
 
             }
 
             else if (statusId == 409) {
-                logger.error("Username: " + employeeEntity.getUsername() + " already present in keycloak");
+                logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
 
             } else {
-                logger.error("Username: " + employeeEntity.getUsername() + " could not be created in keycloak");
+                logger.error(ACTION + employeeEntity.getUsername() + " could not be created in keycloak");
 
             }
 
