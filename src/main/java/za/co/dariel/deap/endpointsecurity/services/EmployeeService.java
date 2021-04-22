@@ -57,7 +57,6 @@ public class EmployeeService implements UserDetailsService {
 
 		}
 
-		String givenPassword = employee.getPassword();
 
 		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
 
