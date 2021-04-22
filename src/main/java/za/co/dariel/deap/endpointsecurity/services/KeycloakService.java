@@ -34,8 +34,7 @@ public class KeycloakService {
     @Value("${keycloak.realm}")
     private String realm;
 
-    private String adminUsername = "admin";
-    private String adminPassword = "admin";
+    private String admin = "admin";
 
 
     public int createUserInKeyCloak(EmployeeEntity employeeEntity) {
@@ -117,7 +116,7 @@ public class KeycloakService {
 
     private UsersResource getKeycloakUserResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(adminUsername).password(adminPassword)
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(admin).password(admin)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
@@ -128,7 +127,7 @@ public class KeycloakService {
 
     private RealmResource getRealmResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(adminUsername).password(adminPassword)
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(admin).password(admin)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
