@@ -88,7 +88,7 @@ public class KeycloakService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("context", e);
 
         }
 
