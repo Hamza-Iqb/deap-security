@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
+
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 
@@ -22,6 +23,7 @@ public class KeycloakService {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
     private static final String ACTION = "Username==";
+    private Response result;
 
     @Value("${keycloak.credentials.secret}")
     private String secretKey;
@@ -38,8 +40,8 @@ public class KeycloakService {
     private String admin = "admin";
 
 
-    public int createUserInKeyCloak(EmployeeEntity employeeEntity) {
-
+    public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
+        String userId = null;
         int statusId = 0;
         try {
 
@@ -60,7 +62,7 @@ public class KeycloakService {
 
             if (statusId == 201) {
 
-                String userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+                userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
                 System.out.println("User created with userId:" + userId);
 
@@ -96,11 +98,18 @@ public class KeycloakService {
 
         }
 
-        return statusId;
+        return userId;
 
     }
 
-    // Reset passowrd
+    public void deleteUserInKeyCloak(String userId){
+
+        UsersResource userResource = getKeycloakUserResource();
+        userResource.get(userId).remove();
+        logger.warn("Employee with id: " + userId + " has been removed");
+    }
+
+    // Reset password
     public void resetPassword(String newPassword, String userId) {
 
         UsersResource userResource = getKeycloakUserResource();
