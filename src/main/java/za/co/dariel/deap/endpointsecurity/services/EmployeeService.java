@@ -25,6 +25,8 @@ public class EmployeeService implements UserDetailsService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private final String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
+
+	private KeycloakService keyClockService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
@@ -56,7 +58,8 @@ public class EmployeeService implements UserDetailsService {
 			throw new IllegalStateException("Email is already taken");
 
 		}
-
+		String userId = keyClockService.createUserInKeyCloak(employee);
+		employee.setKeycloakId(userId);
 
 		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
 
@@ -86,8 +89,15 @@ public class EmployeeService implements UserDetailsService {
 		return employeeRequest;
 	}
 
-	public void deleteEmployee(String email) {
-		employeeRepo.deleteById(email);
+	public void deleteEmployee(String userId) {
+		try {
+			EmployeeEntity employee = employeeRepo.findByKeycloakId(userId);
+			employeeRepo.deleteById(employee.getEmail());
+		}
+		catch(Exception e){
+			logger.error("EmployeeEntity with keycloak id: " + userId + " does not exist");
+		}
+
 	}
 
 }
