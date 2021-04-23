@@ -25,6 +25,7 @@ public class EmployeeEntity implements UserDetails {
 	private String firstName;
 	private String lastName;
 	private String password;
+	private String keycloakId;
 
 	public EmployeeEntity(String email, String firstName, String lastName, String password) {
 		super();
