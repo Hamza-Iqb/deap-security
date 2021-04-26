@@ -18,6 +18,7 @@ import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class KeycloakService {
 
     private String admin = "admin";
 
-    public void getUserInKeyCloak(HttpServletRequest request){
+    public List<String> getUserInKeyCloak(HttpServletRequest request){
         //below code uses keycloak server details to get permission to access data
         String admin = "admin";
         KeycloakSecurityContext context = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
@@ -54,6 +55,14 @@ public class KeycloakService {
         //after getting permission, we now retrieve list of users from our created realm
         List<UserRepresentation> list = keycloak.realm("SpringBootKeycloak").users().list();
         list.forEach(u -> System.out.println(u.getId() + ": " + u.getUsername()));
+
+        List <String> usernames = new ArrayList<String>();
+
+        for (int i=0; i< list.size(); i++){
+            usernames.add(i, list.get(i).getUsername());
+        }
+
+        return usernames;
 
     }
 
