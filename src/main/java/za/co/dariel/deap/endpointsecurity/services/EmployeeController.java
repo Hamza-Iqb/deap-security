@@ -59,7 +59,7 @@ public class EmployeeController {
 
 	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get")
-	public List<String> showAllEmployees(HttpServletRequest request) {
+	public List<EmployeeEntity> showAllEmployees(HttpServletRequest request) {
 
 		return keyClockService.getUserInKeyCloak(request);
 
