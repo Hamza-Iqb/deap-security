@@ -43,7 +43,7 @@ public class KeycloakService {
 
     private String admin = "admin";
 
-    public List<String> getUserInKeyCloak(HttpServletRequest request){
+    public List<EmployeeEntity> getUserInKeyCloak(HttpServletRequest request){
         //below code uses keycloak server details to get permission to access data
         String admin = "admin";
         KeycloakSecurityContext context = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
@@ -56,10 +56,15 @@ public class KeycloakService {
         List<UserRepresentation> list = keycloak.realm("SpringBootKeycloak").users().list();
         list.forEach(u -> System.out.println(u.getId() + ": " + u.getUsername()));
 
-        List <String> usernames = new ArrayList<String>();
+        List <EmployeeEntity> usernames = new ArrayList<>();
 
         for (int i=0; i< list.size(); i++){
-            usernames.add(i, list.get(i).getUsername());
+            usernames.add(i, new EmployeeEntity(
+                    list.get(i).getEmail(),
+                    list.get(i).getFirstName(),
+                    list.get(i).getLastName(),
+                    null
+                    ));
         }
 
         return usernames;
