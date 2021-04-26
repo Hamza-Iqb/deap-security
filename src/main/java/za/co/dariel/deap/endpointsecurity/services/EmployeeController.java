@@ -1,11 +1,6 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
 import lombok.AllArgsConstructor;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +14,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @CrossOrigin(value = "*", allowedHeaders = "*")
 @RestController
@@ -65,12 +59,12 @@ public class EmployeeController {
 
 	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get")
-	public List<EmployeeDto> showAllEmployees(HttpServletRequest request) {
+	public List<String> showAllEmployees(HttpServletRequest request) {
 
-		keyClockService.getUserInKeyCloak(request);
+		return keyClockService.getUserInKeyCloak(request);
 
-		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
-		.collect(Collectors.toList());
+//		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
+//		.collect(Collectors.toList());
 
 	}
 
