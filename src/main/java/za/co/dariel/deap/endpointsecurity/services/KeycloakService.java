@@ -80,7 +80,7 @@ public class KeycloakService {
             UsersResource userResource = getKeycloakUserResource();
 
             UserRepresentation user = new UserRepresentation();
-            user.setUsername(employeeEntity.getUsername());
+            user.setUsername(employeeEntity.getEmail());
             user.setEmail(employeeEntity.getEmail());
             user.setFirstName(employeeEntity.getFirstName());
             user.setLastName(employeeEntity.getLastName());
