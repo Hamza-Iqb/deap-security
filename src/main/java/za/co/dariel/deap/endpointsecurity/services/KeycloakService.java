@@ -2,6 +2,7 @@ package za.co.dariel.deap.endpointsecurity.services;
 
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -15,8 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class KeycloakService {
@@ -39,6 +43,34 @@ public class KeycloakService {
 
     private String admin = "admin";
 
+    public List<EmployeeEntity> getUserInKeyCloak(HttpServletRequest request){
+        //below code uses keycloak server details to get permission to access data
+        String admin = "admin";
+        KeycloakSecurityContext context = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
+        System.out.println(context);
+        Keycloak keycloak = KeycloakBuilder.builder().serverUrl("http://localhost:8080/auth").realm("master").username(admin).password(admin)
+                .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .build();
+
+        //after getting permission, we now retrieve list of users from our created realm
+        List<UserRepresentation> list = keycloak.realm("SpringBootKeycloak").users().list();
+        list.forEach(u -> System.out.println(u.getId() + ": " + u.getUsername()));
+
+        List <EmployeeEntity> usernames = new ArrayList<>();
+
+        for (int i=0; i< list.size(); i++){
+            usernames.add(i, new EmployeeEntity(
+                    list.get(i).getEmail(),
+                    list.get(i).getFirstName(),
+                    list.get(i).getLastName(),
+                    null
+                    ));
+        }
+
+        return usernames;
+
+    }
+
 
     public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
         String userId = null;
@@ -48,7 +80,7 @@ public class KeycloakService {
             UsersResource userResource = getKeycloakUserResource();
 
             UserRepresentation user = new UserRepresentation();
-            user.setUsername(employeeEntity.getUsername());
+            user.setUsername(employeeEntity.getEmail());
             user.setEmail(employeeEntity.getEmail());
             user.setFirstName(employeeEntity.getFirstName());
             user.setLastName(employeeEntity.getLastName());
