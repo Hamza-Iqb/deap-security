@@ -14,6 +14,7 @@ public class EmployeeDto {
 	private String firstName;
 	private String lastName;
 	private String password;
+	private String keycloakId;
 
 	public EmployeeDto(String email, String firstName, String lastName, String password) {
 			super();

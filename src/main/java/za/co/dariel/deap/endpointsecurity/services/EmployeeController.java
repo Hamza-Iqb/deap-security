@@ -50,7 +50,7 @@ public class EmployeeController {
 		// convert entity to DTO
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
-		keyClockService.createUserInKeyCloak(employee);
+		//keyClockService.createUserInKeyCloak(employee);
 
 		logger.info(employeeResponse.toString());
 		return "Employee successfully added";
@@ -117,13 +117,11 @@ public class EmployeeController {
 	
 	
 	@RolesAllowed("employee-admin")
-	@DeleteMapping("employee/delete/{email}")
-	public String deleteEmployee(@PathVariable("email") String email) {
+	@DeleteMapping("employee/delete/{userId}")
+	public String deleteEmployee(@PathVariable("userId") String userId) {
 
-		EmployeeEntity employee = employeeService.getSingleEmployee(email);
-
-
-		employeeService.deleteEmployee(employee.getEmail());
+		keyClockService.deleteUserInKeyCloak(userId);
+		employeeService.deleteEmployee(userId);
 		return "Successfully deleted employee";
 	}
 

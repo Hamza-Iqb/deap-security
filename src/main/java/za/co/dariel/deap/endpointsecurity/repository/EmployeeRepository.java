@@ -8,4 +8,6 @@ import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 @Repository
 public interface EmployeeRepository extends CrudRepository<EmployeeEntity, String>{
 
+    EmployeeEntity findByKeycloakId(String userId);
+
 }
