@@ -1,6 +1,7 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
 import lombok.AllArgsConstructor;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -54,6 +56,18 @@ public class EmployeeController {
 
 		logger.info(employeeResponse.toString());
 		return "Employee successfully added";
+	}
+
+	@RolesAllowed({"employee-user", "employee-admin"})
+	@GetMapping("employee/name")
+	public List<EmployeeEntity> hello(HttpServletRequest request){
+		KeycloakAuthenticationToken principal = (KeycloakAuthenticationToken) request.getUserPrincipal();
+		String username = principal.getAccount().getKeycloakSecurityContext().getToken().getName();
+
+		List<EmployeeEntity> list = new ArrayList<>();
+		list.add(new EmployeeEntity(username, username, username, username));
+
+		return list;
 	}
 
 
