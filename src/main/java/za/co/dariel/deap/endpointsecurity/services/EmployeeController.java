@@ -103,32 +103,22 @@ public class EmployeeController {
 
 
 
-	@RolesAllowed("employee-admin")
-	@GetMapping("employee/get/{username}")
-	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
-		EmployeeEntity employee = employeeService.getSingleEmployee(username);
 
-		// convert entity to DTO
-		EmployeeDto employeepostResponse = modelMapper.map(employee, EmployeeDto.class);
-		return employeepostResponse;
-	}
-
-
-	@RolesAllowed("employee-admin")
-	@PutMapping("employee/update/{username}")
-	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
-
-		// convert DTO to Entity
-		EmployeeEntity employeeRequest = modelMapper.map(employeeDto, EmployeeEntity.class);
-
-		EmployeeEntity employee = employeeService.updateStudent(username, employeeRequest);
-
-		// entity to DTO
-		EmployeeDto employeeResponse = modelMapper.map(employeeDto, EmployeeDto.class);
-		System.out.println(employeeResponse);
-
-		return "Updated employee details";
-	}
+//	@RolesAllowed("employee-admin")
+//	@PutMapping("employee/update/{username}")
+//	public String updateEmployee(@PathVariable("username") String username, @RequestBody EmployeeDto employeeDto) {
+//
+//		// convert DTO to Entity
+//		EmployeeEntity employeeRequest = modelMapper.map(employeeDto, EmployeeEntity.class);
+//
+//		EmployeeEntity employee = employeeService.updateStudent(username, employeeRequest);
+//
+//		// entity to DTO
+//		EmployeeDto employeeResponse = modelMapper.map(employeeDto, EmployeeDto.class);
+//		System.out.println(employeeResponse);
+//
+//		return "Updated employee details";
+//	}
 
 
 
@@ -137,7 +127,6 @@ public class EmployeeController {
 	public String deleteEmployee(@PathVariable("userId") String userId) {
 
 		keyClockService.deleteUserInKeyCloak(userId);
-		employeeService.deleteEmployee(userId);
 		return "Successfully deleted employee";
 	}
 
