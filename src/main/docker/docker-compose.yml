@@ -1,58 +1,35 @@
 version: '3.1'
 
-volumes:
-  postgres_data:
-    driver: local
-
 services:
+
+  keycloak:
+    image: jboss/keycloak:11.0.2
+    command:
+      - " -b 0.0.0.0"
+    container_name: "keycloak"
+    networks:
+      - myproject
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8080:8080"
+
   app:
-    image: 'spring-docker-endpointsecurity:latest'
     build:
       context: .
-    container_name: springEndpointsecurity
-    depends_on:
-      - db
+      dockerfile: Dockerfile
+    container_name: "backend"
+    environment:
+      - spring.oauth2.resourceserver.jwt.issuer-uri= http://keycloak:8080/auth/realms/SpringBootKeycloak
+    links:
       - keycloak
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
-      - SPRING_DATASOURCE_USERNAME=compose-postgres
-      - SPRING_DATASOURCE_PASSWORD=compose-postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
+    networks:
+      - myproject
+    restart: on-failure
     ports:
-      - 9090:9090
+      - "9090:9090"
 
-
-  db:
-    image: 'postgres:13.1-alpine'
-    container_name: postgresDB
-    environment:
-      - POSTGRES_USER=compose-postgres
-      - POSTGRES_PASSWORD=compose-postgres
-
-  postgres:
-    image: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: Pa55w0rd
-      #KEYCLOAK_IMPORT: src/main/docker/realm-export.json
-      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
-      #JDBC_PARAMS: "ssl=true"
-    ports:
-      - 8080:8080
-    depends_on:
-      - postgres
+networks:
+  myproject:
+    driver: bridge
