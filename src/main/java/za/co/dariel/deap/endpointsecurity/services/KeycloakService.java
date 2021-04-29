@@ -6,6 +6,7 @@ import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -139,6 +140,22 @@ public class KeycloakService {
         UsersResource userResource = getKeycloakUserResource();
         userResource.get(userId).remove();
         logger.warn("Employee with id: " + userId + " has been removed");
+    }
+
+
+    // Reset password
+    public void updateUserInKeyCloak(String userId, EmployeeEntity employeeEntity) {
+
+
+        UserRepresentation user = new UserRepresentation();
+        user.setEmail(employeeEntity.getEmail());
+        user.setFirstName(employeeEntity.getFirstName());
+        user.setLastName(employeeEntity.getLastName());
+
+        UsersResource userResource = getKeycloakUserResource();
+        userResource.get(userId).update(user);
+
+        logger.info("User with ID: " + userId + " has been updated");
     }
 
     // Reset password
