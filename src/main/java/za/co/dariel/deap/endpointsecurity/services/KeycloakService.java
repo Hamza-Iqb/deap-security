@@ -2,13 +2,11 @@ package za.co.dariel.deap.endpointsecurity.services;
 
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +40,12 @@ public class KeycloakService {
 
     private String admin = "admin";
     private String master = "master";
+    private String cli = "admin-cli";
 
-    public List<EmployeeEntity> getUserInKeyCloak(HttpServletRequest request){
+    public List<EmployeeEntity> getUserInKeyCloak(){
         //below code uses keycloak server details to get permission to access data
         var keycloak = KeycloakBuilder.builder().serverUrl("http://localhost:8080/auth").realm(master).username(admin).password(admin)
-                .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .clientId(cli).resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
         //after getting permission, we now retrieve list of users from our created realm
@@ -72,60 +71,56 @@ public class KeycloakService {
     public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
         String userId = null;
         var statusId = 0;
-        try {
 
-            UsersResource userResource = getKeycloakUserResource();
+        UsersResource userResource = getKeycloakUserResource();
 
-            var user = new UserRepresentation();
-            user.setUsername(employeeEntity.getEmail());
-            user.setEmail(employeeEntity.getEmail());
-            user.setFirstName(employeeEntity.getFirstName());
-            user.setLastName(employeeEntity.getLastName());
-            user.setEnabled(true);
+        var user = new UserRepresentation();
+        user.setUsername(employeeEntity.getEmail());
+        user.setEmail(employeeEntity.getEmail());
+        user.setFirstName(employeeEntity.getFirstName());
+        user.setLastName(employeeEntity.getLastName());
+        user.setEnabled(true);
 
-            // Create user
-            Response result = userResource.create(user);
-            logger.info("Keycloak create user response code>>>>" + result.getStatus());
+        // Create user
+        Response result = userResource.create(user);
+        logger.info("Keycloak create user response code>>>>" + result.getStatus());
 
-            statusId = result.getStatus();
+        statusId = result.getStatus();
 
-            if (statusId == 201) {
+        if (statusId == 201) {
 
-                userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+            userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
-                logger.info("User created with userId:" + userId);
+            logger.info("User created with userId:" + userId);
 
-                // Define password credential
-                var passwordCred = new CredentialRepresentation();
-                passwordCred.setTemporary(false);
-                passwordCred.setType(CredentialRepresentation.PASSWORD);
-                passwordCred.setValue(employeeEntity.getPassword());
+            // Define password credential
+            var passwordCred = new CredentialRepresentation();
+            passwordCred.setTemporary(false);
+            passwordCred.setType(CredentialRepresentation.PASSWORD);
+            passwordCred.setValue(employeeEntity.getPassword());
 
-                // Set password credential
-                userResource.get(userId).resetPassword(passwordCred);
+            // Set password credential
+            userResource.get(userId).resetPassword(passwordCred);
 
 
-                // set role
-                var realmResource = getRealmResource();
-                var savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
-                realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
+            // set role
+            var realmResource = getRealmResource();
+            var savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
+            realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
 
-                logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
-
-            }
-
-            else if (statusId == 409) {
-                logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
-
-            } else {
-                logger.error(ACTION + employeeEntity.getUsername() + " could not be created in keycloak");
-
-            }
-
-        } catch (Exception e) {
-            logger.info("context", e);
+            logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
 
         }
+
+        else if (statusId == 409) {
+            logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
+
+        } else {
+            logger.error(ACTION + employeeEntity.getUsername() + " could not be created in keycloak");
+
+        }
+
+
 
         return userId;
 
@@ -173,7 +168,7 @@ public class KeycloakService {
     private UsersResource getKeycloakUserResource() {
 
         Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm(master).username(admin).password(admin)
-                .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .clientId(cli).resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
         var realmResource = kc.realm(realm);
@@ -184,7 +179,7 @@ public class KeycloakService {
     private RealmResource getRealmResource() {
 
         Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm(master).username(admin).password(admin)
-                .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .clientId(cli).resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
 
