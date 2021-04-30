@@ -21,7 +21,7 @@ public class EmployeeService implements UserDetailsService {
 
 	private EmployeeRepository employeeRepo;
 
-	private final String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
+	private final static String userNotFoundMessage = "EmployeeEntity with username: %s not found";
 
 	private KeycloakService keyClockService;
 	
@@ -30,7 +30,7 @@ public class EmployeeService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return employeeRepo.findById(username)
-				.orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+				.orElseThrow(() -> new UsernameNotFoundException(String.format(userNotFoundMessage, username)));
 	}
 
 	public List<EmployeeEntity> getEmployees() {
