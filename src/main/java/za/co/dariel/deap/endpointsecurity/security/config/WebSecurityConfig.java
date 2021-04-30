@@ -27,7 +27,7 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
+		var keycloakAuthenticationProvider = keycloakAuthenticationProvider();
 		keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
 		auth.authenticationProvider(keycloakAuthenticationProvider);
 	}
@@ -39,7 +39,7 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public KeycloakSpringBootConfigResolver KeycloakConfigResolver() {
+	public KeycloakSpringBootConfigResolver keycloakSpringBootConfigResolver() {
 		return new KeycloakSpringBootConfigResolver();
 	}
 }
