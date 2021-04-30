@@ -68,6 +68,7 @@ public class KeycloakService {
 
 
     public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
+        Response result = null;
         String userId = null;
         var statusId = 0;
 
@@ -81,41 +82,43 @@ public class KeycloakService {
         user.setEnabled(true);
 
         // Create user
-        Response result = userResource.create(user);
-        logger.info("Keycloak create user response code>>>>" + result.getStatus());
+        try {
+            result = userResource.create(user);
+            logger.info("Keycloak create user response code>>>>" + result.getStatus());
+        } finally {
 
-        statusId = result.getStatus();
+            statusId = result.getStatus();
 
-        if (statusId == 201) {
+            if (statusId == 201) {
 
-            userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+                userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
-            logger.info("User created with userId:" + userId);
+                logger.info("User created with userId:" + userId);
 
-            // Define password credential
-            var passwordCred = new CredentialRepresentation();
-            passwordCred.setTemporary(false);
-            passwordCred.setType(CredentialRepresentation.PASSWORD);
-            passwordCred.setValue(employeeEntity.getPassword());
+                // Define password credential
+                var passwordCred = new CredentialRepresentation();
+                passwordCred.setTemporary(false);
+                passwordCred.setType(CredentialRepresentation.PASSWORD);
+                passwordCred.setValue(employeeEntity.getPassword());
 
-            // Set password credential
-            userResource.get(userId).resetPassword(passwordCred);
+                // Set password credential
+                userResource.get(userId).resetPassword(passwordCred);
 
 
-            // set role
-            var realmResource = getRealmResource();
-            var savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
-            realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
+                // set role
+                var realmResource = getRealmResource();
+                var savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
+                realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
 
-            logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
+                logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
 
-        }
+            } else if (statusId == 409) {
+                logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
 
-        else if (statusId == 409) {
-            logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
+            } else {
+                logger.error(ACTION + employeeEntity.getUsername() + " could not be created in keycloak");
 
-        } else {
-            logger.error(ACTION + employeeEntity.getUsername() + " could not be created in keycloak");
+            }
 
         }
 
