@@ -27,7 +27,6 @@ public class KeycloakService {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakService.class);
     private static final String ACTION = "Username==";
-    private Response result;
 
     @Value("${keycloak.credentials.secret}")
     private String secretKey;
@@ -42,23 +41,21 @@ public class KeycloakService {
     private String realm;
 
     private String admin = "admin";
+    private String master = "master";
 
     public List<EmployeeEntity> getUserInKeyCloak(HttpServletRequest request){
         //below code uses keycloak server details to get permission to access data
-        String admin = "admin";
-        KeycloakSecurityContext context = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
-        System.out.println(context);
-        Keycloak keycloak = KeycloakBuilder.builder().serverUrl("http://localhost:8080/auth").realm("master").username(admin).password(admin)
+        var keycloak = KeycloakBuilder.builder().serverUrl("http://localhost:8080/auth").realm(master).username(admin).password(admin)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
         //after getting permission, we now retrieve list of users from our created realm
         List<UserRepresentation> list = keycloak.realm("SpringBootKeycloak").users().list();
-        list.forEach(u -> System.out.println(u.getId() + ": " + u.getUsername()));
+        //list.forEach(u -> logger.info(u.getId() + ": " + u.getUsername()));
 
         List <EmployeeEntity> usernames = new ArrayList<>();
 
-        for (int i=0; i< list.size(); i++){
+        for (var i=0; i< list.size(); i++){
             usernames.add(i, new EmployeeEntity(
                     list.get(i).getEmail(),
                     list.get(i).getFirstName(),
@@ -74,12 +71,12 @@ public class KeycloakService {
 
     public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
         String userId = null;
-        int statusId = 0;
+        var statusId = 0;
         try {
 
             UsersResource userResource = getKeycloakUserResource();
 
-            UserRepresentation user = new UserRepresentation();
+            var user = new UserRepresentation();
             user.setUsername(employeeEntity.getEmail());
             user.setEmail(employeeEntity.getEmail());
             user.setFirstName(employeeEntity.getFirstName());
@@ -88,7 +85,7 @@ public class KeycloakService {
 
             // Create user
             Response result = userResource.create(user);
-            System.out.println("Keycloak create user response code>>>>" + result.getStatus());
+            logger.info("Keycloak create user response code>>>>" + result.getStatus());
 
             statusId = result.getStatus();
 
@@ -96,10 +93,10 @@ public class KeycloakService {
 
                 userId = result.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
 
-                System.out.println("User created with userId:" + userId);
+                logger.info("User created with userId:" + userId);
 
                 // Define password credential
-                CredentialRepresentation passwordCred = new CredentialRepresentation();
+                var passwordCred = new CredentialRepresentation();
                 passwordCred.setTemporary(false);
                 passwordCred.setType(CredentialRepresentation.PASSWORD);
                 passwordCred.setValue(employeeEntity.getPassword());
@@ -109,8 +106,8 @@ public class KeycloakService {
 
 
                 // set role
-                RealmResource realmResource = getRealmResource();
-                RoleRepresentation savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
+                var realmResource = getRealmResource();
+                var savedRoleRepresentation = realmResource.roles().get("app-user").toRepresentation();
                 realmResource.users().get(userId).roles().realmLevel().add(Arrays.asList(savedRoleRepresentation));
 
                 logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
@@ -146,7 +143,7 @@ public class KeycloakService {
     public void updateUserInKeyCloak(String userId, EmployeeEntity employeeEntity) {
 
 
-        UserRepresentation user = new UserRepresentation();
+        var user = new UserRepresentation();
         user.setEmail(employeeEntity.getEmail());
         user.setFirstName(employeeEntity.getFirstName());
         user.setLastName(employeeEntity.getLastName());
@@ -163,7 +160,7 @@ public class KeycloakService {
         UsersResource userResource = getKeycloakUserResource();
 
         // Define password credential
-        CredentialRepresentation passwordCred = new CredentialRepresentation();
+        var passwordCred = new CredentialRepresentation();
         passwordCred.setTemporary(false);
         passwordCred.setType(CredentialRepresentation.PASSWORD);
         passwordCred.setValue(newPassword.trim());
@@ -175,18 +172,18 @@ public class KeycloakService {
 
     private UsersResource getKeycloakUserResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(admin).password(admin)
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm(master).username(admin).password(admin)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
-        RealmResource realmResource = kc.realm(realm);
+        var realmResource = kc.realm(realm);
 
         return realmResource.users();
     }
 
     private RealmResource getRealmResource() {
 
-        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm("master").username(admin).password(admin)
+        Keycloak kc = KeycloakBuilder.builder().serverUrl(authUrl).realm(master).username(admin).password(admin)
                 .clientId("admin-cli").resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
