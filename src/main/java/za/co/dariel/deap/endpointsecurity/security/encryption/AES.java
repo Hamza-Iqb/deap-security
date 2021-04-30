@@ -30,11 +30,11 @@ public class AES {
             var ivspec = new IvParameterSpec(iv);
 
             var factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), iv, 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
             var secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-            var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            var cipher = Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder()
                     .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
@@ -53,11 +53,11 @@ public class AES {
             var ivspec = new IvParameterSpec(iv);
 
             var factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
+            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), iv, 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
             var secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-            var cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            var cipher = Cipher.getInstance("RSA/None/OAEPWITHSHA-256ANDMGF1PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
