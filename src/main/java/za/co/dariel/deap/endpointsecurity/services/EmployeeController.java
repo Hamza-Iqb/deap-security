@@ -37,10 +37,10 @@ public class EmployeeController {
 
 		// Convert base 64 to String
 		byte[] decodedBytes = Base64.getDecoder().decode(employeeDto.getPassword());
-		String decodedPassword = new String(decodedBytes);
+		var decodedPassword = new String(decodedBytes);
 
 		// Decrypt String
-		String decryptedString = aes.decrypt(decodedPassword);
+		var decryptedString = aes.decrypt(decodedPassword);
 
 
 		// convert DTO to entity
@@ -71,9 +71,9 @@ public class EmployeeController {
 
 	@RolesAllowed("employee-admin")
 	@GetMapping("employee/get")
-	public List<EmployeeEntity> showAllEmployees(HttpServletRequest request) {
+	public List<EmployeeEntity> showAllEmployees() {
 
-		return keyClockService.getUserInKeyCloak(request);
+		return keyClockService.getUserInKeyCloak();
 
 //		return employeeService.getEmployees().stream().map(post -> modelMapper.map(post, EmployeeDto.class))
 //		.collect(Collectors.toList());
