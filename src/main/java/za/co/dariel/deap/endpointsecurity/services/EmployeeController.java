@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.models.EmployeeDto;
-import za.co.dariel.deap.endpointsecurity.security.JWTUtil;
 import za.co.dariel.deap.endpointsecurity.security.encryption.AES;
 
 import javax.annotation.security.RolesAllowed;
@@ -52,7 +51,6 @@ public class EmployeeController {
 		// convert entity to DTO
 		EmployeeDto employeeResponse = modelMapper.map(employee, EmployeeDto.class);
 
-		//keyClockService.createUserInKeyCloak(employee);
 
 		logger.info(employeeResponse.toString());
 		return "Employee successfully added";
@@ -83,23 +81,6 @@ public class EmployeeController {
 	}
 
 
-
-	@RolesAllowed("employee-admin")
-	@GetMapping("/token")
-	public String getToken(){
-
-		String token = JWTUtil.getJWTToken();
-
-		java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
-		String[] parts = token.split("\\."); // split out the "parts" (header, payload and signature)
-
-		String headerJson = new String(decoder.decode(parts[0]));
-		String payloadJson = new String(decoder.decode(parts[1]));
-		String signatureJson = new String(decoder.decode(parts[2]));
-
-		return headerJson + "--------" + payloadJson + "--------" + signatureJson;
-
-	}
 
 
 

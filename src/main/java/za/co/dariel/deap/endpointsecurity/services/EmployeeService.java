@@ -1,20 +1,19 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.AllArgsConstructor;
 import za.co.dariel.deap.endpointsecurity.entities.EmployeeEntity;
 import za.co.dariel.deap.endpointsecurity.repository.EmployeeRepository;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,9 +21,7 @@ public class EmployeeService implements UserDetailsService {
 
 	private EmployeeRepository employeeRepo;
 
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-	private final String USER_NOT_FOUND_MSG = "EmployeeEntity with username: %s not found";
+	private final static String userNotFoundMessage = "EmployeeEntity with username: %s not found";
 
 	private KeycloakService keyClockService;
 	
@@ -33,7 +30,7 @@ public class EmployeeService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return employeeRepo.findById(username)
-				.orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, username)));
+				.orElseThrow(() -> new UsernameNotFoundException(String.format(userNotFoundMessage, username)));
 	}
 
 	public List<EmployeeEntity> getEmployees() {
@@ -60,10 +57,7 @@ public class EmployeeService implements UserDetailsService {
 		}
 		String userId = keyClockService.createUserInKeyCloak(employee);
 		employee.setKeycloakId(userId);
-
-		String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
-
-		employee.setPassword(encodedPassword);
+		logger.error(employee.getPassword());
 
 		return employeeRepo.save(employee);
 
