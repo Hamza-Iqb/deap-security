@@ -68,24 +68,22 @@ public class KeycloakService {
 
 
     public String createUserInKeyCloak(EmployeeEntity employeeEntity) {
-        Response result = null;
         String userId = null;
         var statusId = 0;
-
-        UsersResource userResource = getKeycloakUserResource();
-
-        var user = new UserRepresentation();
-        user.setUsername(employeeEntity.getEmail());
-        user.setEmail(employeeEntity.getEmail());
-        user.setFirstName(employeeEntity.getFirstName());
-        user.setLastName(employeeEntity.getLastName());
-        user.setEnabled(true);
-
-        // Create user
         try {
-            result = userResource.create(user);
+
+            UsersResource userResource = getKeycloakUserResource();
+
+            var user = new UserRepresentation();
+            user.setUsername(employeeEntity.getEmail());
+            user.setEmail(employeeEntity.getEmail());
+            user.setFirstName(employeeEntity.getFirstName());
+            user.setLastName(employeeEntity.getLastName());
+            user.setEnabled(true);
+
+            // Create user
+            Response result = userResource.create(user);
             logger.info("Keycloak create user response code>>>>" + result.getStatus());
-        } finally {
 
             statusId = result.getStatus();
 
@@ -112,7 +110,9 @@ public class KeycloakService {
 
                 logger.info(ACTION + employeeEntity.getUsername() + " created in keycloak successfully");
 
-            } else if (statusId == 409) {
+            }
+
+            else if (statusId == 409) {
                 logger.error(ACTION + employeeEntity.getUsername() + " already present in keycloak");
 
             } else {
@@ -120,9 +120,13 @@ public class KeycloakService {
 
             }
 
+        } catch (Exception e) {
+            logger.info("context", e);
+
         }
-
-
+        finally {
+            logger.debug("finally block message");
+        }
 
         return userId;
 
