@@ -51,7 +51,7 @@ public class KeycloakService {
 
         //after getting permission, we now retrieve list of users from our created realm
         List<UserRepresentation> list = keycloak.realm("SpringBootKeycloak").users().list();
-        //list.forEach(u -> logger.info(u.getId() + ": " + u.getUsername()));
+        list.forEach(u -> logger.info(u.getId() + ": " + u.getUsername()));
 
         List <EmployeeEntity> usernames = new ArrayList<>();
 
