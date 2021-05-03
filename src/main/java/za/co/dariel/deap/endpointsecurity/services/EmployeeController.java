@@ -1,5 +1,6 @@
 package za.co.dariel.deap.endpointsecurity.services;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @CrossOrigin(value = "*", allowedHeaders = "*")
 @RestController
+@RequestMapping("/employee")
 @AllArgsConstructor
 public class EmployeeController {
 
@@ -30,9 +32,9 @@ public class EmployeeController {
 	private KeycloakService keyClockService;
 
 
-
+	@ApiOperation(value = "Register a new employee", notes = "endpoint to register a new employee in the DEAP-demo application")
 	@RolesAllowed({"employee-user", "employee-admin"})
-	@PostMapping(value = "employee/registration")
+	@PostMapping(value = "registration")
 	public String registerNewEmployee(@RequestBody EmployeeDto employeeDto) {
 
 		// Convert base 64 to String
@@ -56,9 +58,10 @@ public class EmployeeController {
 		return "Employee successfully added";
 	}
 
+	@ApiOperation(value = "returns the username of the loged in keycloak user", notes = "returns the username of the loged in keycloak user in the DEAP-demo application", response = EmployeeEntity.class)
 	@RolesAllowed({"employee-user", "employee-admin"})
-	@GetMapping("employee/name")
-	public List<EmployeeEntity> hello(HttpServletRequest request){
+	@GetMapping("name")
+	public List<EmployeeEntity> returnUserName(HttpServletRequest request){
 		KeycloakAuthenticationToken principal = (KeycloakAuthenticationToken) request.getUserPrincipal();
 		String username = principal.getAccount().getKeycloakSecurityContext().getToken().getName();
 
@@ -68,9 +71,9 @@ public class EmployeeController {
 		return list;
 	}
 
-
+	@ApiOperation(value = "returns all the users in the keycloak DB", notes = "returns all the users in the keycloak DB in the DEAP-demo application", response = EmployeeEntity.class)
 	@RolesAllowed("employee-admin")
-	@GetMapping("employee/get")
+	@GetMapping("get")
 	public List<EmployeeEntity> showAllEmployees() {
 
 		return keyClockService.getUserInKeyCloak();
@@ -83,9 +86,9 @@ public class EmployeeController {
 
 
 
-
+	@ApiOperation(value = "returns a single users in the keycloak DB", notes = "returns a single users in the keycloak DB according to its username in the DEAP-demo application", response = EmployeeEntity.class)
 	@RolesAllowed("employee-admin")
-	@GetMapping("employee/get/{username}")
+	@GetMapping("get/{username}")
 	public EmployeeDto showSingleEmployee(@PathVariable("username") String username) {
 		EmployeeEntity employee = employeeService.getSingleEmployee(username);
 
@@ -94,9 +97,9 @@ public class EmployeeController {
 		return employeepostResponse;
 	}
 
-
+	@ApiOperation(value = "updates a single users in the keycloak DB", notes = "updates a single users in the keycloak DB according to its user ID in the DEAP-demo application")
 	@RolesAllowed("employee-admin")
-	@PutMapping("employee/update/{userId}")
+	@PutMapping("update/{userId}")
 	public String updateEmployee(@PathVariable("userId") String userId, @RequestBody EmployeeDto employeeDto) {
 
 //		// convert DTO to Entity
@@ -114,9 +117,9 @@ public class EmployeeController {
 	}
 
 
-
+	@ApiOperation(value = "deletes a single users in the keycloak DB", notes = "deletes a single users in the keycloak DB according to its keycloak user ID in the DEAP-demo application")
 	@RolesAllowed("employee-admin")
-	@DeleteMapping("employee/delete/{userId}")
+	@DeleteMapping("delete/{userId}")
 	public String deleteEmployee(@PathVariable("userId") String userId) {
 
 		keyClockService.deleteUserInKeyCloak(userId);
