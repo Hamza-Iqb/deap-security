@@ -43,7 +43,7 @@ public class KeycloakService {
 
     public List<EmployeeEntity> getUserInKeyCloak(){
         //below code uses keycloak server details to get permission to access data
-        var keycloak = KeycloakBuilder.builder().serverUrl("http://localhost:8080/auth").realm(master).username(admin).password(admin)
+        var keycloak = KeycloakBuilder.builder().serverUrl("https://keycloakkeycloak.herokuapp.com/auth/").realm(master).username(admin).password(admin)
                 .clientId(cli).resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                 .build();
 
